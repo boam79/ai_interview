@@ -151,7 +151,6 @@ export default function VoiceInterviewPage() {
         console.warn('[VoiceInterview] 질문 텍스트가 비어있음, TTS 건너뛰기');
         setIsPlayingQuestion(false);
         setInterviewState('answer');
-        setRecordButtonState('idle');
         return;
       }
       
