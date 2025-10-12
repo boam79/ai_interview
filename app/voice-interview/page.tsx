@@ -61,7 +61,6 @@ export default function VoiceInterviewPage() {
    * 면접 초기화
    */
   const initializeInterview = async () => {
-    setIsInitializing(true);
     try {
       console.log('[VoiceInterview] 면접 초기화 시작...');
       
@@ -117,8 +116,6 @@ export default function VoiceInterviewPage() {
       const errorMessage = error instanceof Error ? error.message : '면접 시작에 실패했습니다.';
       setError(errorMessage);
       setInterviewState('error');
-    } finally {
-      setIsInitializing(false);
     }
   };
 
