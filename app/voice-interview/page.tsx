@@ -25,6 +25,7 @@ export default function VoiceInterviewPage() {
   
   // 오디오 관련 상태
   const [audioCaptureState, setAudioCaptureState] = useState<AudioCaptureState | null>(null);
+  const [isPlayingQuestion, setIsPlayingQuestion] = useState<boolean>(false);
   const [isRecordingAnswer, setIsRecordingAnswer] = useState<boolean>(false);
   const [answerTranscription, setAnswerTranscription] = useState<string>('');
   const [showFeedbackModal, setShowFeedbackModal] = useState<boolean>(false);
