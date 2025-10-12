@@ -20,7 +20,7 @@ import {
   startRealtimeTranscription, 
   simulateRealtimeTranscription,
   formatTranscriptionText,
-  isStreamingSupported 
+  // isStreamingSupported 
 } from '@/utils/realtimeTranscription';
 
 /**
@@ -67,7 +67,7 @@ export default function VoiceTestPage() {
   const [showIntroductionGuide, setShowIntroductionGuide] = useState<boolean>(false);
 
   // Test sentence
-  const testSentence = '안녕하세요. 저는 AI 면접을 준비하고 있습니다.';
+  // const testSentence = '안녕하세요. 저는 AI 면접을 준비하고 있습니다.';
 
   /**
    * Request microphone permission on mount
@@ -118,9 +118,10 @@ export default function VoiceTestPage() {
       console.log('✅ Microphone permission granted (auto-selected best device)');
       console.log('🎤 Selected microphone:', microphoneInfo);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Microphone permission error:', error);
-      setPermissionError(getMicrophoneErrorMessage(error));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown microphone error';
+      setPermissionError(getMicrophoneErrorMessage(errorMessage));
       setPermissionGranted(false);
       setSelectedMicrophoneInfo(null);
     }
@@ -167,9 +168,10 @@ export default function VoiceTestPage() {
       setIsRecording(true);
       setRecordButtonState('recording');
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Recording start error:', error);
-      alert(`녹음 시작 오류: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : '녹음 시작 오류가 발생했습니다.';
+      alert(`녹음 시작 오류: ${errorMessage}`);
     }
   };
 
@@ -200,9 +202,10 @@ export default function VoiceTestPage() {
       console.log('📤 Using real-time streaming transcription...');
       await handleStreamingTranscription(audioFile);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Transcription error:', error);
-      setTranscriptionError(error.message || '음성 인식 중 오류가 발생했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '음성 인식 중 오류가 발생했습니다.';
+      setTranscriptionError(errorMessage);
       setRecordButtonState('idle');
       audioRecorderRef.current.cleanup();
     }
@@ -220,7 +223,7 @@ export default function VoiceTestPage() {
           console.log('📝 Streaming delta:', deltaText);
           setRealtimeText(fullText);
         },
-        onComplete: (finalText, duration) => {
+        onComplete: (finalText) => {
           console.log('✅ Streaming transcription completed:', finalText);
           setRecognizedText(finalText);
           setIsRealtimeProcessing(false);
@@ -236,9 +239,10 @@ export default function VoiceTestPage() {
         }
       });
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Streaming transcription setup error:', error);
-      setTranscriptionError(error.message || '실시간 음성 인식 설정에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '실시간 음성 인식 설정에 실패했습니다.';
+      setTranscriptionError(errorMessage);
       setIsRealtimeProcessing(false);
       setRecordButtonState('idle');
       audioRecorderRef.current.cleanup();
@@ -276,7 +280,7 @@ export default function VoiceTestPage() {
         onTextUpdate: (deltaText, fullText) => {
           setRealtimeText(fullText);
         },
-        onComplete: (finalText, duration) => {
+        onComplete: (finalText) => {
           console.log('✅ Typing effect completed, setting recognized text:', finalText);
           setRecognizedText(finalText);
           setIsRealtimeProcessing(false);
@@ -296,9 +300,10 @@ export default function VoiceTestPage() {
         }
       }, 5000);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Regular transcription error:', error);
-      setTranscriptionError(error.message || '음성 인식에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '음성 인식에 실패했습니다.';
+      setTranscriptionError(errorMessage);
       setIsRealtimeProcessing(false);
       setRecordButtonState('idle');
       audioRecorderRef.current.cleanup();
@@ -408,7 +413,7 @@ export default function VoiceTestPage() {
                 p-3 sm:p-4 rounded-xl border border-purple-200/50 dark:border-purple-700/50">
                 <p className="text-xs sm:text-sm text-purple-700 dark:text-purple-300 font-medium mb-2">💡 예시:</p>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-700 dark:text-gray-300 italic leading-relaxed">
-                  "안녕하세요. 저는 김철수입니다. 올해 25살이고, 컴퓨터공학을 전공하고 있습니다."
+                  &ldquo;안녕하세요. 저는 김철수입니다. 올해 25살이고, 컴퓨터공학을 전공하고 있습니다.&rdquo;
                 </p>
               </div>
             </motion.div>
@@ -506,7 +511,7 @@ export default function VoiceTestPage() {
                       <strong>인식된 텍스트:</strong>
                     </p>
                     <p className="text-base font-medium text-gray-800 dark:text-gray-200 mt-1">
-                      "{recognizedText}"
+                      &ldquo;{recognizedText}&rdquo;
                     </p>
                   </div>
                   

@@ -23,7 +23,7 @@ export default function AnswerRecorder({
   const [recorderState, setRecorderState] = useState<RecorderState>('idle');
   const [transcribedText, setTranscribedText] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  // const [isAnalyzing, setIsAnalyzing] = useState(false);
   
   const audioRecorderRef = useRef<AudioRecorder | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -72,9 +72,10 @@ export default function AnswerRecorder({
       analyserRef.current = analyser;
 
       console.log('✅ 녹음 시작됨');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ 녹음 시작 실패:', error);
-      setErrorMessage(error.message || '녹음을 시작할 수 없습니다.');
+      const errorMessage = error instanceof Error ? error.message : '녹음을 시작할 수 없습니다.';
+      setErrorMessage(errorMessage);
       setRecorderState('error');
     }
   };
@@ -125,13 +126,14 @@ export default function AnswerRecorder({
       await typeText(data.text);
       
       setRecorderState('completed');
-      setIsAnalyzing(false);
+      // setIsAnalyzing(false);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ 음성 인식 실패:', error);
-      setErrorMessage(error.message || '음성 인식 중 오류가 발생했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '음성 인식 중 오류가 발생했습니다.';
+      setErrorMessage(errorMessage);
       setRecorderState('error');
-      setIsAnalyzing(false);
+      // setIsAnalyzing(false);
       
       if (audioRecorderRef.current) {
         audioRecorderRef.current.cleanup();

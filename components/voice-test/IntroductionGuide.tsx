@@ -132,8 +132,8 @@ export default function IntroductionGuide({
                     예시
                   </h4>
                   <p className="text-xs xs:text-sm text-gray-600 dark:text-gray-400 italic leading-relaxed">
-                    "안녕하세요. 저는 김철수입니다. 올해 25살이고, 컴퓨터공학을 전공하고 있습니다. 
-                    현재 취업을 준비하고 있으며, AI 면접 연습을 위해 참여하게 되었습니다."
+                    &ldquo;안녕하세요. 저는 김철수입니다. 올해 25살이고, 컴퓨터공학을 전공하고 있습니다. 
+                    현재 취업을 준비하고 있으며, AI 면접 연습을 위해 참여하게 되었습니다.&rdquo;
                   </p>
                 </div>
 

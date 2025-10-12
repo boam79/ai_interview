@@ -96,12 +96,14 @@ export async function POST(request: NextRequest) {
           controller.enqueue(new TextEncoder().encode(data));
           controller.close();
           
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('❌ [Streaming Voice-to-Text] Stream error:', error);
+          
+          const errorMessage = error instanceof Error ? error.message : 'Streaming transcription failed';
           
           const errorData = JSON.stringify({
             type: 'error',
-            error: error.message || 'Streaming transcription failed',
+            error: errorMessage,
           }) + '\n';
           
           controller.enqueue(new TextEncoder().encode(errorData));
@@ -118,17 +120,19 @@ export async function POST(request: NextRequest) {
       },
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     const endTime = Date.now();
     const duration = endTime - startTime;
 
     console.error('❌ [Streaming Voice-to-Text] Error:', error);
     console.error(`⏱️ [Streaming Voice-to-Text] Failed after ${duration}ms`);
 
+    const errorMessage = error instanceof Error ? error.message : 'Failed to start streaming transcription';
+
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Failed to start streaming transcription',
+        error: errorMessage,
         duration 
       },
       { status: 500 }

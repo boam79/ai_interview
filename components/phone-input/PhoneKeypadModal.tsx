@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { formatPhoneNumber, isValidPhoneNumber, addDigit, removeLastDigit } from '@/utils/phoneValidator';
+import { isValidPhoneNumber, addDigit, removeLastDigit } from '@/utils/phoneValidator';
 
 interface PhoneKeypadModalProps {
   isOpen: boolean;

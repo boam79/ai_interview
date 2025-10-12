@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { keypadButton, staggerContainer, staggerItem } from '@/utils/animations';
+import { staggerContainer, staggerItem } from '@/utils/animations';
 
 interface NumericKeypadProps {
   onNumberPress: (digit: string) => void;

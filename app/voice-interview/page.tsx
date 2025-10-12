@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fadeInUp, scaleIn } from '@/utils/animations';
-import RecordButton, { RecordButtonState } from '@/components/voice-test/RecordButton';
+// import { fadeInUp, scaleIn } from '@/utils/animations';
+// import RecordButton, { RecordButtonState } from '@/components/voice-test/RecordButton';
 import { requestMicrophoneAccess, startAudioStream, stopAudioStream, AudioCaptureState } from '@/utils/audioCapture';
 import { createAudioRecorder } from '@/utils/audioRecorder';
 import { startRealtimeTranscription } from '@/utils/realtimeTranscription';
@@ -19,23 +19,14 @@ export default function VoiceInterviewPage() {
   const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [currentAnswer, setCurrentAnswer] = useState('');
   const [currentQuestionText, setCurrentQuestionText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [summary, setSummary] = useState<string>('');
   
   // 오디오 관련 상태
-  const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
   const [audioCaptureState, setAudioCaptureState] = useState<AudioCaptureState | null>(null);
-  const [recordButtonState, setRecordButtonState] = useState<RecordButtonState>('idle');
-  const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [recognizedText, setRecognizedText] = useState<string>('');
-  const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
-  const [isPlayingQuestion, setIsPlayingQuestion] = useState<boolean>(false);
   const [isRecordingAnswer, setIsRecordingAnswer] = useState<boolean>(false);
   const [answerTranscription, setAnswerTranscription] = useState<string>('');
-  const [isInitializing, setIsInitializing] = useState<boolean>(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState<boolean>(false);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState<boolean>(false);
   
@@ -50,7 +41,7 @@ export default function VoiceInterviewPage() {
       hasInitialized.current = true;
       initializeInterview();
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     return () => {
@@ -78,7 +69,6 @@ export default function VoiceInterviewPage() {
       const { stream } = await requestMicrophoneAccess();
       const captureState = startAudioStream(stream);
       setAudioCaptureState(captureState);
-      setPermissionGranted(true);
       
       // 전화번호 가져오기
       const phoneNumber = localStorage.getItem('phoneNumber') || '010-0000-0000';
@@ -122,9 +112,10 @@ export default function VoiceInterviewPage() {
         playQuestionTTS(result.firstQuestion);
       }, 500);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[VoiceInterview] 면접 초기화 실패:', error);
-      setError(error.message || '면접 시작에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '면접 시작에 실패했습니다.';
+      setError(errorMessage);
       setInterviewState('error');
     } finally {
       setIsInitializing(false);
@@ -220,7 +211,7 @@ export default function VoiceInterviewPage() {
       await audio.play();
       console.log('[VoiceInterview] 질문 TTS 재생 시작');
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[VoiceInterview] TTS 오류:', error);
       setIsPlayingQuestion(false);
       
@@ -244,19 +235,16 @@ export default function VoiceInterviewPage() {
       console.log('🔴 답변 녹음 시작...');
 
       // 이전 결과 초기화
-      setRecognizedText('');
-      setCurrentAnswer('');
       setAnswerTranscription('');
 
       // 녹음 시작
       audioRecorderRef.current.startRecording(audioCaptureState.stream);
-      setIsRecording(true);
       setIsRecordingAnswer(true);
-      setRecordButtonState('recording');
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ 녹음 시작 오류:', error);
-      setError(`녹음 시작 오류: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : '녹음 시작 오류가 발생했습니다.';
+      setError(`녹음 시작 오류: ${errorMessage}`);
     }
   };
 
@@ -269,10 +257,7 @@ export default function VoiceInterviewPage() {
 
       // 녹음 중지
       audioRecorderRef.current.stopRecording();
-      setIsRecording(false);
       setIsRecordingAnswer(false);
-      setRecordButtonState('processing');
-      setIsTranscribing(true);
 
       // 녹음된 파일 가져오기
       const audioFile = audioRecorderRef.current.getRecordedFile('answer.webm');
@@ -283,15 +268,11 @@ export default function VoiceInterviewPage() {
       // 음성 전사
       realtimeControllerRef.current = await startRealtimeTranscription(audioFile, {
         onTextUpdate: (deltaText, fullText) => {
-          setRecognizedText(fullText);
+          // 실시간 텍스트 업데이트는 필요시 사용
         },
         onComplete: async (finalText, duration) => {
           console.log('✅ 답변 전사 완료:', finalText);
-          setCurrentAnswer(finalText);
-          setRecognizedText(finalText);
           setAnswerTranscription(finalText);
-          setIsTranscribing(false);
-          setRecordButtonState('idle');
           audioRecorderRef.current.cleanup();
           
           // 5번째 질문인 경우 자동으로 면접 요약 시작
@@ -305,9 +286,10 @@ export default function VoiceInterviewPage() {
               
               // 요약 생성 완료 후 피드백 모달 표시
               setShowFeedbackModal(true);
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error('[VoiceInterview] 자동 요약 생성 실패:', error);
-              setError(error.message || '요약 생성에 실패했습니다.');
+              const errorMessage = error instanceof Error ? error.message : '요약 생성에 실패했습니다.';
+              setError(errorMessage);
             } finally {
               setIsGeneratingSummary(false);
             }
@@ -318,9 +300,10 @@ export default function VoiceInterviewPage() {
               try {
                 await submitAnswer(finalText);
                 // submitAnswer에서 자동으로 다음 질문으로 진행됨
-              } catch (error: any) {
+              } catch (error: unknown) {
                 console.error('[VoiceInterview] 자동 진행 실패:', error);
-                setError(error.message || '다음 질문 진행에 실패했습니다.');
+                const errorMessage = error instanceof Error ? error.message : '다음 질문 진행에 실패했습니다.';
+                setError(errorMessage);
               }
             }, 3000);
           }
@@ -328,16 +311,14 @@ export default function VoiceInterviewPage() {
         onError: (error) => {
           console.error('❌ 전사 오류:', error);
           setError(error);
-          setIsTranscribing(false);
-          setRecordButtonState('idle');
           audioRecorderRef.current.cleanup();
         }
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ 녹음 중지 오류:', error);
-      setError(`녹음 중지 오류: ${error.message}`);
-      setRecordButtonState('idle');
+      const errorMessage = error instanceof Error ? error.message : '녹음 중지 오류가 발생했습니다.';
+      setError(`녹음 중지 오류: ${errorMessage}`);
       audioRecorderRef.current.cleanup();
     }
   };
@@ -346,7 +327,6 @@ export default function VoiceInterviewPage() {
    * 답변 제출
    */
   const submitAnswer = async (answerText: string) => {
-    setIsLoading(true);
 
     try {
       console.log('[VoiceInterview] 답변 제출 중...', {
@@ -398,8 +378,6 @@ export default function VoiceInterviewPage() {
             
             // 다음 질문으로 넘어갈 때 답변 내용 초기화
             setAnswerTranscription('');
-            setRecognizedText('');
-            setCurrentAnswer('');
             
             // 다음 질문을 바로 TTS로 재생
             console.log('[VoiceInterview] 다음 질문 자동 재생:', {
@@ -415,22 +393,15 @@ export default function VoiceInterviewPage() {
             await generateSummary(newAnswers);
           }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[VoiceInterview] 답변 제출 실패:', error);
-      setError(error.message || '답변 제출에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '답변 제출에 실패했습니다.';
+      setError(errorMessage);
       setInterviewState('error');
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  /**
-   * 다음 질문으로 이동
-   */
-  const goToNextQuestion = async () => {
-    console.log('[VoiceInterview] goToNextQuestion 호출됨 - 자동 진행으로 인해 사용되지 않음');
-    // 자동 진행으로 인해 이 함수는 더 이상 사용되지 않음
-  };
+  // goToNextQuestion 함수는 자동 진행으로 인해 더 이상 사용되지 않음
 
   /**
    * 면접 요약 생성
@@ -464,9 +435,10 @@ export default function VoiceInterviewPage() {
       setSummary(result.summary);
       // interviewState는 피드백 모달에서 사용자가 확인할 때까지 유지
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[VoiceInterview] 요약 생성 실패:', error);
-      setError(error.message || '요약 생성에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '요약 생성에 실패했습니다.';
+      setError(errorMessage);
       setInterviewState('error');
     }
   };
@@ -563,7 +535,7 @@ export default function VoiceInterviewPage() {
                       className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
                     >
                       <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">답변 내용:</h4>
-                      <p className="text-gray-800 dark:text-gray-200">"{answerTranscription}"</p>
+                      <p className="text-gray-800 dark:text-gray-200">&ldquo;{answerTranscription}&rdquo;</p>
                       {currentQuestionIndex < 4 && (
                         <div className="mt-3 flex items-center justify-center space-x-2 text-sm text-blue-600 dark:text-blue-400">
                           <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>

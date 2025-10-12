@@ -39,13 +39,15 @@ export async function POST(request: NextRequest) {
       isComplete: result.isComplete,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[SimpleInterview API] 답변 처리 실패:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : '답변 처리에 실패했습니다.';
     
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || '답변 처리에 실패했습니다.' 
+        error: errorMessage
       },
       { status: 500 }
     );

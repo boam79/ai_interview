@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       duration,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     const endTime = Date.now();
     const duration = endTime - startTime;
 
@@ -97,21 +97,24 @@ export async function POST(request: NextRequest) {
     console.error(`⏱️ [Voice-to-Text] Failed after ${duration}ms`);
 
     // Handle specific OpenAI errors
-    if (error?.status) {
+    if (error && typeof error === 'object' && 'status' in error) {
+      const apiError = error as { status: number; message: string };
       return NextResponse.json(
         { 
           success: false, 
-          error: `OpenAI API Error (${error.status}): ${error.message}` 
+          error: `OpenAI API Error (${apiError.status}): ${apiError.message}` 
         },
-        { status: error.status }
+        { status: apiError.status }
       );
     }
 
     // Generic error
+    const errorMessage = error instanceof Error ? error.message : 'Failed to transcribe audio';
+    
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Failed to transcribe audio' 
+        error: errorMessage
       },
       { status: 500 }
     );

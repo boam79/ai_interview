@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // Simple Interview API를 사용하는 새로운 면접 페이지
 export default function SimpleInterviewPage() {
@@ -65,9 +65,10 @@ export default function SimpleInterviewPage() {
 
       console.log('[SimpleInterview] 면접 초기화 완료!');
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[SimpleInterview] 면접 초기화 실패:', error);
-      setError(error.message || '면접 시작에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '면접 시작에 실패했습니다.';
+      setError(errorMessage);
       setInterviewState('error');
     }
   };
@@ -122,9 +123,10 @@ export default function SimpleInterviewPage() {
         await generateSummary(newAnswers);
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[SimpleInterview] 답변 제출 실패:', error);
-      setError(error.message || '답변 제출에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '답변 제출에 실패했습니다.';
+      setError(errorMessage);
       setInterviewState('error');
     } finally {
       setIsLoading(false);
@@ -164,9 +166,10 @@ export default function SimpleInterviewPage() {
       setSummary(result.summary);
       setInterviewState('completed');
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[SimpleInterview] 요약 생성 실패:', error);
-      setError(error.message || '요약 생성에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '요약 생성에 실패했습니다.';
+      setError(errorMessage);
       setInterviewState('error');
     }
   };

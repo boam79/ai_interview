@@ -34,13 +34,15 @@ export async function POST(request: NextRequest) {
       summary: summary,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[SimpleInterview API] 면접 요약 생성 실패:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : '면접 요약 생성에 실패했습니다.';
     
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || '면접 요약 생성에 실패했습니다.' 
+        error: errorMessage
       },
       { status: 500 }
     );

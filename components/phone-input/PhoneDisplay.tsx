@@ -57,8 +57,8 @@ export default function PhoneDisplay({
       {/* Subtle indicator dots */}
       <div className="flex items-center justify-center gap-1 mt-4">
         {Array.from({ length: 11 }).map((_, index) => {
-          const digitIndex = index < 3 ? index : index < 7 ? index - 1 : index - 2;
-          const hasDigit = phoneNumber.replace(/\D/g, '').length > index;
+              // const digitIndex = index < 3 ? index : index < 7 ? index - 1 : index - 2;
+              const hasDigit = phoneNumber.replace(/\D/g, '').length > index;
           
           return (
             <motion.div

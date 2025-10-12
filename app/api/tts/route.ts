@@ -67,13 +67,15 @@ export async function POST(request: NextRequest) {
       },
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[TTS API] TTS 생성 실패:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : '음성 변환에 실패했습니다.';
     
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || '음성 변환에 실패했습니다.' 
+        error: errorMessage
       },
       { status: 500 }
     );

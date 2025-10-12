@@ -36,13 +36,15 @@ export async function POST(request: NextRequest) {
       firstQuestion: result.firstQuestion,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[SimpleInterview API] 면접 시작 실패:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : '면접 시작에 실패했습니다.';
     
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || '면접 시작에 실패했습니다.' 
+        error: errorMessage
       },
       { status: 500 }
     );

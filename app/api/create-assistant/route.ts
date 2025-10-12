@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createInterviewAssistant, listAssistants } from '@/utils/createAssistant';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   const startTime = Date.now();
   
   try {
@@ -40,14 +40,16 @@ export async function POST(request: NextRequest) {
       responseTime,
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     const responseTime = Date.now() - startTime;
     console.error('[API] Assistant 생성 실패:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : 'Assistant 생성 중 오류가 발생했습니다.';
     
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Assistant 생성 중 오류가 발생했습니다.',
+        error: errorMessage,
         responseTime,
       },
       { status: 500 }
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
  * 기존 Assistant 목록 조회
  * GET /api/create-assistant
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('[API] Assistant 목록 조회 요청 받음');
     
@@ -88,13 +90,15 @@ export async function GET(request: NextRequest) {
       })),
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API] Assistant 목록 조회 실패:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : 'Assistant 목록 조회 중 오류가 발생했습니다.';
     
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Assistant 목록 조회 중 오류가 발생했습니다.',
+        error: errorMessage,
       },
       { status: 500 }
     );

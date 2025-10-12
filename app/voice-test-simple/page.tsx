@@ -54,9 +54,10 @@ export default function VoiceTestSimplePage() {
       setAudioCaptureState(captureState);
       setPermissionGranted(true);
       console.log('✅ 마이크 권한 획득 완료');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ 마이크 권한 오류:', error);
-      setError(`마이크 권한 오류: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : '마이크 권한 오류가 발생했습니다.';
+      setError(`마이크 권한 오류: ${errorMessage}`);
     }
   };
 
@@ -77,9 +78,10 @@ export default function VoiceTestSimplePage() {
       setIsRecording(true);
       setRecordButtonState('recording');
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ 녹음 시작 오류:', error);
-      setError(`녹음 시작 오류: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : '녹음 시작 오류가 발생했습니다.';
+      setError(`녹음 시작 오류: ${errorMessage}`);
     }
   };
 
@@ -105,7 +107,7 @@ export default function VoiceTestSimplePage() {
         onTextUpdate: (deltaText, fullText) => {
           setRecognizedText(fullText);
         },
-        onComplete: (finalText, duration) => {
+        onComplete: (finalText) => {
           console.log('✅ 전사 완료:', finalText);
           setRecognizedText(finalText);
           setIsTranscribing(false);
@@ -121,9 +123,10 @@ export default function VoiceTestSimplePage() {
         }
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ 녹음 중지 오류:', error);
-      setError(`녹음 중지 오류: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : '녹음 중지 오류가 발생했습니다.';
+      setError(`녹음 중지 오류: ${errorMessage}`);
       setRecordButtonState('idle');
       audioRecorderRef.current.cleanup();
     }
@@ -239,7 +242,7 @@ export default function VoiceTestSimplePage() {
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-700 font-medium mb-2">💡 예시:</p>
                 <p className="text-sm text-gray-700 italic">
-                  "안녕하세요. 저는 김철수입니다. 올해 25살이고, 컴퓨터공학을 전공하고 있습니다."
+                  &ldquo;안녕하세요. 저는 김철수입니다. 올해 25살이고, 컴퓨터공학을 전공하고 있습니다.&rdquo;
                 </p>
               </div>
             </motion.div>
@@ -284,7 +287,7 @@ export default function VoiceTestSimplePage() {
               {recognizedText && (
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                   <h4 className="text-sm font-medium text-gray-700 mb-2">인식된 텍스트:</h4>
-                  <p className="text-gray-800">"{recognizedText}"</p>
+                  <p className="text-gray-800">&ldquo;{recognizedText}&rdquo;</p>
                 </div>
               )}
 

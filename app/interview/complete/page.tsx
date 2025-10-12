@@ -23,7 +23,7 @@ export default function InterviewCompletePage() {
   
   const [isLoadingSummary, setIsLoadingSummary] = useState(true);
   const [summary, setSummary] = useState<string>('');
-  const [feedback, setFeedback] = useState<string>('');
+  // const [feedback, setFeedback] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [duration, setDuration] = useState<number>(0);
   const [questionCount, setQuestionCount] = useState<number>(0);
@@ -103,9 +103,10 @@ export default function InterviewCompletePage() {
 
       setIsLoadingSummary(false);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[Complete] 요약 로드 실패:', error);
-      setError(error.message || '면접 결과를 불러올 수 없습니다.');
+      const errorMessage = error instanceof Error ? error.message : '면접 결과를 불러올 수 없습니다.';
+      setError(errorMessage);
       setIsLoadingSummary(false);
     }
   };

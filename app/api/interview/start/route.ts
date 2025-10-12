@@ -63,14 +63,16 @@ export async function POST(request: NextRequest) {
       responseTime,
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     const responseTime = Date.now() - startTime;
     console.error('[API] 면접 시작 실패:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : '면접 시작 중 오류가 발생했습니다.';
     
     return NextResponse.json(
       {
         success: false,
-        error: error.message || '면접 시작 중 오류가 발생했습니다.',
+        error: errorMessage,
         responseTime,
       },
       { status: 500 }

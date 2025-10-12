@@ -96,14 +96,16 @@ export async function POST(request: NextRequest) {
       responseTime,
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     const responseTime = Date.now() - startTime;
     console.error('[API] 요약 생성 실패:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : '요약 생성 중 오류가 발생했습니다.';
     
     return NextResponse.json(
       {
         success: false,
-        error: error.message || '요약 생성 중 오류가 발생했습니다.',
+        error: errorMessage,
         responseTime,
       },
       { status: 500 }
