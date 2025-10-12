@@ -83,7 +83,7 @@ export default function AnswerRecorder({
   const handleStopRecording = async () => {
     try {
       setRecorderState('processing');
-      setIsAnalyzing(true);
+      // setIsAnalyzing(true);
 
       if (!audioRecorderRef.current) {
         throw new Error('AudioRecorder가 초기화되지 않았습니다.');
@@ -164,7 +164,7 @@ export default function AnswerRecorder({
     setRecorderState('idle');
     setTranscribedText('');
     setErrorMessage('');
-    setIsAnalyzing(false);
+    // setIsAnalyzing(false);
     
     if (audioRecorderRef.current) {
       audioRecorderRef.current.cleanup();
