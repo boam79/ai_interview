@@ -307,7 +307,7 @@ export async function getLatestAssistantMessage(
 export async function deleteThread(threadId: string): Promise<void> {
   try {
     console.log(`[AssistantAPI] Thread 삭제 - ${threadId}`);
-    await openai.beta.threads.del(threadId);
+    await openai.beta.threads.delete(threadId);
     console.log('[AssistantAPI] Thread 삭제 완료');
   } catch (error) {
     console.error('[AssistantAPI] Thread 삭제 실패:', error);
