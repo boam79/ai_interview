@@ -44,7 +44,6 @@ export default function AnswerRecorder({
     setRecorderState('idle');
     setTranscribedText('');
     setErrorMessage('');
-    setIsAnalyzing(false);
   }, [questionNumber]);
 
   // 녹음 시작
