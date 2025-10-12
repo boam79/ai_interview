@@ -360,9 +360,10 @@ export async function startInterview(
         if (isCompleted) {
           break;
         }
-      } catch (error) {
+      } catch (error: unknown) {
         lastError = error;
-        console.log(`[AssistantAPI] 시도 ${attempt} 실패:`, error.message);
+        const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+        console.log(`[AssistantAPI] 시도 ${attempt} 실패:`, errorMessage);
       }
       
       if (attempt < maxRetries) {
