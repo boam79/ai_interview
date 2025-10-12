@@ -131,8 +131,8 @@ export async function getRunStatus(
     
     console.log(`[AssistantAPI] Run 상태 조회 - Thread: ${threadId}, Run: ${runId}`);
     
-    // OpenAI SDK 파라미터: runs.retrieve(runId, { thread_id })
-    const run = await openai.beta.threads.runs.retrieve(runId, threadId);
+    // OpenAI SDK 파라미터: runs.retrieve(thread_id, run_id)
+    const run = await openai.beta.threads.runs.retrieve(threadId, runId);
     console.log(`[AssistantAPI] Run 상태 상세 정보:`);
     console.log(`  - Run ID: ${run.id}`);
     console.log(`  - 상태: ${run.status}`);
@@ -194,7 +194,7 @@ export async function pollRunStatus(
         // failed 상태의 경우 더 자세한 정보 수집
         if (status === 'failed') {
           try {
-            const run = await openai.beta.threads.runs.retrieve(runId, threadId);
+            const run = await openai.beta.threads.runs.retrieve(threadId, runId);
             if (run.last_error) {
               console.error(`[AssistantAPI] Run last_error:`, run.last_error);
               
