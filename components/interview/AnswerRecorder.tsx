@@ -27,6 +27,7 @@ export default function AnswerRecorder({
   
   const audioRecorderRef = useRef<AudioRecorder | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
+  const dataArrayRef = useRef<Uint8Array | null>(null);
 
   // 컴포넌트 마운트 시 AudioRecorder 초기화
   useEffect(() => {
@@ -69,6 +70,10 @@ export default function AnswerRecorder({
       analyser.fftSize = 2048;
       source.connect(analyser);
       analyserRef.current = analyser;
+      
+      // dataArray 생성
+      const bufferLength = analyser.frequencyBinCount;
+      dataArrayRef.current = new Uint8Array(bufferLength);
 
       console.log('✅ 녹음 시작됨');
     } catch (error: unknown) {
@@ -175,7 +180,7 @@ export default function AnswerRecorder({
     <div className="w-full space-y-3 sm:space-y-4 md:space-y-6">
       
       {/* 파형 시각화 */}
-      {(recorderState === 'recording' || recorderState === 'processing') && analyserRef.current && (
+      {(recorderState === 'recording' || recorderState === 'processing') && analyserRef.current && dataArrayRef.current && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -183,6 +188,7 @@ export default function AnswerRecorder({
         >
           <WaveformVisualizer
             analyser={analyserRef.current}
+            dataArray={dataArrayRef.current}
             isRecording={recorderState === 'recording'}
           />
         </motion.div>
