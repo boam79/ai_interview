@@ -5,7 +5,7 @@
  * 새로운 면접용 Assistant를 생성합니다.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createInterviewAssistant, listAssistants } from '@/utils/createAssistant';
 
 export async function POST() {

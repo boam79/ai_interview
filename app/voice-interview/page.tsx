@@ -175,7 +175,7 @@ export default function VoiceInterviewPage() {
         try {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
-        } catch (e) {
+        } catch {
           errorMessage = `HTTP ${response.status}: ${response.statusText}`;
         }
         console.error('[VoiceInterview] TTS API 오류:', {
@@ -267,10 +267,10 @@ export default function VoiceInterviewPage() {
 
       // 음성 전사
       realtimeControllerRef.current = await startRealtimeTranscription(audioFile, {
-        onTextUpdate: (deltaText, fullText) => {
+        onTextUpdate: () => {
           // 실시간 텍스트 업데이트는 필요시 사용
         },
-        onComplete: async (finalText, duration) => {
+        onComplete: async (finalText) => {
           console.log('✅ 답변 전사 완료:', finalText);
           setAnswerTranscription(finalText);
           audioRecorderRef.current.cleanup();

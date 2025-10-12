@@ -67,16 +67,13 @@ export default function InterviewCompletePage() {
       if (!summaryResponse.ok) {
         console.warn('[Complete] 요약 생성 실패, 기본 요약 사용');
         setSummary('면접이 완료되었습니다. 수고하셨습니다!');
-        setFeedback('AI 요약 생성 중 오류가 발생했습니다.');
       } else {
         const summaryData = await summaryResponse.json();
         if (summaryData.success && summaryData.summary) {
           console.log('[Complete] AI 요약 생성 완료');
           setSummary(summaryData.summary);
-          setFeedback(summaryData.feedback || summaryData.summary);
         } else {
           setSummary('면접이 완료되었습니다. 수고하셨습니다!');
-          setFeedback(summaryData.error || '요약을 생성할 수 없습니다.');
         }
       }
 
