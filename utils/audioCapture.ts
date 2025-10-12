@@ -148,20 +148,22 @@ export async function requestMicrophoneAccess(): Promise<{
     
     return { stream, microphoneInfo };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ [Audio] Microphone access error:', error);
 
     // Handle specific error types
-    if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+    const errorName = error instanceof Error ? error.name : '';
+    if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
       throw new Error('마이크 권한이 거부되었습니다. 브라우저 설정에서 마이크 권한을 허용해주세요.');
-    } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+    } else if (errorName === 'NotFoundError' || errorName === 'DevicesNotFoundError') {
       throw new Error('마이크를 찾을 수 없습니다. 마이크나 블루투스 이어폰이 연결되어 있는지 확인해주세요.');
-    } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+    } else if (errorName === 'NotReadableError' || errorName === 'TrackStartError') {
       throw new Error('마이크가 다른 애플리케이션에서 사용 중입니다. 다른 앱을 종료하고 다시 시도해주세요.');
-    } else if (error.name === 'OverconstrainedError') {
+    } else if (errorName === 'OverconstrainedError') {
       throw new Error('마이크 설정에 문제가 있습니다. 블루투스 이어폰의 경우 페어링 상태를 확인해주세요.');
     } else {
-      throw new Error(`마이크 오류: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 마이크 오류';
+      throw new Error(`마이크 오류: ${errorMessage}`);
     }
   }
 }
@@ -207,9 +209,10 @@ export function startAudioStream(stream: MediaStream): AudioCaptureState {
       dataArray,
     };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ [Audio] Failed to start audio stream:', error);
-    throw new Error(`Failed to start audio stream: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to start audio stream: ${errorMessage}`);
   }
 }
 
@@ -241,7 +244,7 @@ export function stopAudioStream(state: AudioCaptureState): void {
 
     console.log('✅ [Audio] Audio stream stopped and cleaned up');
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ [Audio] Error stopping audio stream:', error);
   }
 }
@@ -334,14 +337,13 @@ export async function requestSpecificMicrophone(deviceId: string): Promise<Media
         autoGainControl: true,
         sampleRate: 44100,
         channelCount: 1,
-        latency: 0.1,
       },
     });
 
     console.log('✅ [Audio] Specific microphone access granted');
     return stream;
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ [Audio] Specific microphone access error:', error);
     throw error;
   }
@@ -364,7 +366,7 @@ export async function getAvailableMicrophones(): Promise<MediaDeviceInfo[]> {
     console.log('🎤 [Audio] Available microphones:', audioInputs.length);
     return audioInputs;
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ [Audio] Error getting microphones:', error);
     return [];
   }
