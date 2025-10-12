@@ -201,7 +201,8 @@ export default function AnswerRecorder({
           animate={{ opacity: 1, y: 0 }}
         >
           <RealtimeTranscription
-            text={transcribedText}
+            isRecording={false}
+            currentText={transcribedText}
             isProcessing={recorderState === 'processing'}
           />
         </motion.div>
