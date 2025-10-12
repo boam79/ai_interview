@@ -57,15 +57,17 @@ export default function WaveformVisualizer({
       // Calculate average amplitude
       let amplitude = 0;
       if (isRecording && analyser && dataArray) {
-        analyser.getByteTimeDomainData(dataArray as Uint8Array);
+        // Use proper Uint8Array type
+        const uint8Data = dataArray instanceof Uint8Array ? dataArray : new Uint8Array(dataArray);
+        analyser.getByteTimeDomainData(uint8Data);
         
         // Calculate average amplitude from time domain data
         let sum = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-          const value = (dataArray[i] - 128) / 128; // Normalize to -1 to 1
+        for (let i = 0; i < uint8Data.length; i++) {
+          const value = (uint8Data[i] - 128) / 128; // Normalize to -1 to 1
           sum += Math.abs(value);
         }
-        amplitude = sum / dataArray.length;
+        amplitude = sum / uint8Data.length;
         
         // Boost amplitude for better visualization
         amplitude = Math.min(amplitude * 3, 1);
