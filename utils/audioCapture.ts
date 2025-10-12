@@ -256,6 +256,7 @@ export function getFrequencyData(
   analyser: AnalyserNode, 
   dataArray: Uint8Array
 ): Uint8Array {
+  // @ts-expect-error - ArrayBufferLike is compatible at runtime
   analyser.getByteFrequencyData(dataArray);
   return dataArray;
 }
@@ -270,6 +271,7 @@ export function getTimeDomainData(
   analyser: AnalyserNode,
   dataArray: Uint8Array
 ): Uint8Array {
+  // @ts-expect-error - ArrayBufferLike is compatible at runtime
   analyser.getByteTimeDomainData(dataArray);
   return dataArray;
 }
