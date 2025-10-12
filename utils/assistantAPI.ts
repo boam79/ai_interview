@@ -205,9 +205,12 @@ export async function pollRunStatus(
                 throw new Error(`OpenAI Assistant 오류: ${run.last_error.message} (코드: ${run.last_error.code})`);
               }
             }
-          } catch (detailError) {
+          } catch (detailError: unknown) {
             console.error(`[AssistantAPI] 실패 상세 정보 조회 실패:`, detailError);
-            if (detailError.message.includes('OpenAI 서버 오류') || detailError.message.includes('OpenAI Assistant 오류')) {
+            // 이미 위에서 throw한 오류를 다시 전파
+            if (detailError instanceof Error && 
+                (detailError.message.includes('OpenAI 서버 오류') || 
+                 detailError.message.includes('OpenAI Assistant 오류'))) {
               throw detailError; // 구체적인 오류 메시지 재전파
             }
           }
