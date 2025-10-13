@@ -60,7 +60,7 @@ export async function createInterviewAssistant(): Promise<string> {
     
     return assistant.id;
     
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('[CreateAssistant] Assistant 생성 실패:', error);
     throw new Error('Assistant 생성에 실패했습니다.');
   }
@@ -81,7 +81,7 @@ export async function listAssistants(): Promise<any[]> {
     
     return assistants.data;
     
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('[CreateAssistant] Assistant 목록 조회 실패:', error);
     throw new Error('Assistant 목록 조회에 실패했습니다.');
   }
@@ -94,11 +94,11 @@ export async function deleteAssistant(assistantId: string): Promise<void> {
   try {
     console.log('[CreateAssistant] Assistant 삭제:', assistantId);
     
-    await openai.beta.assistants.del(assistantId);
+    await openai.beta.assistants.delete(assistantId);
     
     console.log('[CreateAssistant] Assistant 삭제 완료');
     
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('[CreateAssistant] Assistant 삭제 실패:', error);
     throw new Error('Assistant 삭제에 실패했습니다.');
   }
